@@ -67,9 +67,6 @@ const bank1 = [{
 class App extends React.Component {
   constructor(props){
     super(props)
-    this.state ={
-      display :'',
-    }
     this.on = this.on.bind(this);
     this.audio = this.audio.bind(this);
     this.setKeyCode = this.setKeyCode.bind(this);

@@ -7,6 +7,9 @@ import { FaDrum } from 'react-icons/fa';
 import className from 'classnames'
 import { CustomInput, FormGroup, Label } from 'reactstrap';
 
+import * as actions from './actions/index';
+import { connect } from 'react-redux';
+
 const bank1 = [{
   name:'Q',
   url: 'https://s3.amazonaws.com/freecodecamp/drums/Heater-1.mp3',
@@ -61,56 +64,40 @@ const bank1 = [{
   keyCode:67,
 }]
 
-export default class Example extends React.Component {
+class App extends React.Component {
   constructor(props){
     super(props)
     this.state ={
-      on: true,
-      bank: true,
       display :'',
-      volumeValue: 30,
     }
     this.on = this.on.bind(this);
-    this.bank = this.bank.bind(this);
     this.audio = this.audio.bind(this);
     this.setKeyCode = this.setKeyCode.bind(this);
     this.volume = this.volume.bind(this);
   }
 
 on(){
-  this.setState ({
-    on: !this.state.on,
-    display: ''
-  })
-}
-
-bank(){
-  this.setState ({
-    bank: !this.state.bank
-  })
+  this.props.ChangePower();
 }
 
 audio(sukien){
   for( let i = 0 ; i < 9 ; i ++ )
   {
-    if( bank1[i].name === sukien.target.value && this.state.on)
+    if( bank1[i].name === sukien.target.value && this.props.Power)
     {
       var audio = new Audio(bank1[i].url);
-      audio.volume = this.state.volumeValue/100;
-      var display = bank1[i].display;
-      this.setState({
-        display: display
-      })
+      audio.volume = this.props.Volume/100;
+      this.props.ChangeDisplay(bank1[i].display)
       return audio.play();
     }
-    else if(this.state.on === false)
+    else if(this.props.Power === false)
     {
       return -1;
     }
   }
 }
 
-componentDidMount (){
+componentDidMount() {
   document.addEventListener("keydown", this.setKeyCode);
 }
 
@@ -121,40 +108,29 @@ componentWillUnmount() {
 setKeyCode(sukien){
   for( let i = 0 ; i < 9 ; i ++ )
   {
-    if( bank1[i].keyCode === sukien.keyCode && this.state.on)
+    if( bank1[i].keyCode === sukien.keyCode && this.props.Power)
     {
       var audio = new Audio(bank1[i].url);
-      audio.volume = this.state.volumeValue/100;
-      var display = bank1[i].display;
-      this.setState({
-        display: display
-      })
+      audio.volume = this.props.Volume/100;
+      this.props.ChangeDisplay(bank1[i].display)
       return audio.play();
     }
-    if(this.state.on === false || i>8)
+    if(this.props.Power === false || i>8)
     {
       return -1;
     }
   }
 }
 
-volume(sukien){
-  if(this.state.on)
-  {  this.setState({
-    display : 'Volume : ' + sukien.target.value,
-    volumeValue : sukien.target.value
-  })
-}
-else{
-  this.setState({
-    volumeValue : sukien.target.value
-})
-}
+volume(sukien){ 
+  this.props.ChangeVolume(sukien.target.value);
 }
 
   render() {
-    const { on , bank ,display } = this.state;
-
+    const { Display,Power } = this.props;
+    if(Power === false){
+      this.props.Off()
+    }
     return (
       <Container id="drum-machine">
         <Container className='total-drum'>
@@ -181,28 +157,39 @@ else{
           <div id='total-on-off'>
             <h3>Power</h3>
             <div id='on-off1' onClick = {this.on}>
-               <div className={className('on-off',{'on':on === true})}/>
-               <div className={className('on-off',{'on':on === false})}/>
+               <div className={className('on-off',{'on': Power === true})}/>
+               <div className={className('on-off',{'on': Power === false})}/>
             </div>
           </div>
           <div id='screen'>
-          {display}
+          {Display}
           </div>
           <FormGroup id='form'>
           <Label for="exampleCustomRange" className='label'>Volume</Label>
-          <CustomInput 
+          <CustomInput id='volume-value'
           onChange = {this.volume}
           type="range" id="exampleCustomRange" name="customRange" className='volume'/>
         </FormGroup>
-          <div id='bank'>
-            <h3>Bank</h3>
-            <div id='on-off2' onClick = {this.bank}>
-               <div className={className('on-off',{'on':bank === true})}/>
-               <div className={className('on-off',{'on':bank === false})}/>
-            </div>
-          </div>
         </div>
       </Container>
     );
   }
 }
+
+const mapStatetoProps = (state) => {
+  return {
+    Power : state.Power,
+    Volume : state.Volume,
+    Display : state.Display
+  }
+}
+const mapDispatchToProps = (dispatch,props) => {
+  return {
+    ChangePower : () =>  dispatch(actions.Power()),
+    ChangeVolume : (value) =>  dispatch(actions.Volume({value : value})),
+    ChangeDisplay : (value) => dispatch(actions.Display({value : value})),
+    Off : () => dispatch(actions.Off())
+  }
+}
+
+export default connect(mapStatetoProps,mapDispatchToProps) (App);

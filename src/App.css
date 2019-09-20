@@ -3,12 +3,11 @@ body{
   top: 50%;
   left: 50%;
   font-family: Russo One !important;
-  /* background-image: url('C:\Users\HP\Desktop\ReactJS\fcc-drum-machine\src\img\tải xuống.jpg') */
 }
 #drum-machine{
-  width: 670px;/*ngang*/
-  height: 330px;/*dọc*/
-  border: solid 1px orange ;
+  width: 670px;
+  height: 330px;
+  border: solid 1px #d6d6d7 ;
   transform: translate(-50%,-50%);
   display: flex;
 }
@@ -16,7 +15,6 @@ body{
   width: 315px !important;
   height: 260px !important;
   margin: 25px !important;
-  border: solid 1px black ;
 }
 .drum-pad{
   width: 100px ;
@@ -76,11 +74,12 @@ border: solid 1px black ;
   margin-left: 98px;
 }
 #form{
-  font-size: 20px;
+  font-size: 23px;
   display: flex;
-  justify-content: space-between;
-  align-content: center;
-  width:80% ;
+  justify-content: space-around;
+  align-self: center;
+  width: 90% ;
+  margin-top: 20px;
 }
 .label{
   margin: 0;
